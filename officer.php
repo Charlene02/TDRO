@@ -324,6 +324,53 @@ $resultInt = $conn->query($sqlInt);
         <input type="text" name="place_of_violation" required>
     </div>
 </div>
+<script>
+  // To populate Violation Type dropdown from PHP
+document.addEventListener('DOMContentLoaded', function () {
+  const violationTypeSelect = document.getElementById('violation_type');
+  const violationSelect = document.getElementById('violation');
+
+  // Fetch violation types from the server and populate the "Violation Type" dropdown
+  fetch('fetch_violation_types.php')
+      .then(response => response.json())
+      .then(data => {
+          data.forEach(violationType => {
+              const option = document.createElement('option');
+              option.value = violationType;
+              option.textContent = violationType;
+              violationTypeSelect.appendChild(option);
+          });
+      });
+
+  // Listen for changes in the "Violation Type" dropdown
+  violationTypeSelect.addEventListener('change', function () {
+      const selectedViolationType = violationTypeSelect.value;
+
+      // Enable the "Violation" dropdown
+      violationSelect.disabled = false;
+
+      // Fetch violations based on the selected "Violation Type" and populate the "Violation" dropdown
+      fetch('fetch_violations.php?violation_type=' + selectedViolationType)
+          .then(response => response.json())
+          .then(data => {
+              violationSelect.innerHTML = ''; // Clear previous options
+              if (data.length > 0) {
+                  data.forEach(violation => {
+                      const option = document.createElement('option');
+                      option.value = violation;
+                      option.textContent = violation;
+                      violationSelect.appendChild(option);
+                  });
+              } else {
+                  const option = document.createElement('option');
+                  option.value = '';
+                  option.textContent = 'No violations found';
+                  violationSelect.appendChild(option);
+              }
+          });
+  });
+});
+</script>
 
 <div class="form-row">
     <div class="form-group">
@@ -377,6 +424,91 @@ $resultInt = $conn->query($sqlInt);
     </div>
 </div>
     </form>
+
+<script>
+  //modal
+
+const openModalButtons = document.querySelectorAll('[data-modal-target]');
+const closeModalButtons = document.querySelectorAll('[data-close-button]');
+const overlay = document.getElementById('overlay');
+
+console.log(openModalButtons);
+
+openModalButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modal = document.querySelector(button.dataset.modalTarget);
+        openModal(modal);
+    });
+});
+
+closeModalButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modal = button.closest('.modal');
+        closeModal(modal);
+    });
+});
+
+overlay.addEventListener('click', () => {
+    const modals = document.querySelectorAll('.modal.active');
+    modals.forEach(modal => {
+        closeModal(modal);
+    });
+});
+
+function openModal(modal) {
+    if (modal == null) return;
+    modal.classList.add('active');
+    overlay.classList.add('active');
+}
+
+function closeModal(modal) {
+    if (modal == null) return;
+    modal.classList.remove('active');
+    overlay.classList.remove('active');
+}
+
+
+        overlay.addEventListener('click', () => {
+          const modals = document.querySelectorAll('.modal.active')
+          modals.forEach(modal => {
+              closeModal(modal)
+  })
+})
+
+closeModalButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const modal = button.closest('.modal')
+    closeModal(modal)
+  })
+})
+
+function openModal(modal) {
+  if (modal == null) return
+  modal.classList.add('active')
+  overlay.classList.add('active')
+}
+
+function closeModal(modal) {
+  if (modal == null) return
+  modal.classList.remove('active')
+  overlay.classList.remove('active')
+}
+function handleUnattended() {
+  // Disable and clear OR Number and OR Date inputs
+  document.getElementById("or_number").disabled = true;
+  document.getElementById("or_number").value = "";
+  document.getElementById("or_date").disabled = true;
+  document.getElementById("or_date").value = "";
+
+  // Set Status to "Failed"
+  document.getElementById("status").value = "Failed";
+
+  // Set CNC to "NC"
+  document.querySelector('select[name="cnc"]').value = "NC";
+  const nameInput = document.getElementById("nameInput");
+  nameInput.value = "Unattended";
+}
+</script>
 
       </nav>
       <main class="main">
@@ -434,10 +566,10 @@ $resultInt = $conn->query($sqlInt);
             <h1>Violator's Records</h1>
          <div class="box-container">
 <!-- FIRST MODAL -->
-           <div class="box">
-            <button data-modal-target="#modal" class="arrow-button">🡆</button>
-            <div id="overlay"></div>
-             <div class="modal" id="modal">
+<div class="box">
+    <button data-modal-target="#modal" class="arrow-button">🡆</button>
+    <div id="overlay"></div>
+    <div class="modal" id="modal">
               <div class="modal-header">
                 <div class="title">List of Total Apprehension with Contact</div>
               </div>
@@ -483,9 +615,9 @@ $resultInt = $conn->query($sqlInt);
            </div>
            <!-- SECOND MODAL -->
            <div class="box">
-           <button data-modal-target="#second-modal" class="arrow-button">🡆</button>
-            <div id="overlay"></div>
-            <div class="modal" id="second-modal">
+    <button data-modal-target="#second-modal" class="arrow-button">🡆</button>
+    <div id="overlay2"></div> <!-- Changed the ID to overlay2 -->
+    <div class="modal" id="second-modal">
               <div class="modal-header">
                 <div class="title">List of Total Apprehension with No Contact</div>
               </div>
@@ -527,7 +659,76 @@ $resultInt = $conn->query($sqlInt);
              <p><?= $totalApprehensionsN ?></p>
            </div>
          </div>
-       
+         <script>
+    //modal
+      document.addEventListener('DOMContentLoaded', function () {
+      const openModalButtons = document.querySelectorAll('[data-modal-target]');
+      const closeModalButtons = document.querySelectorAll('[data-close-button]');
+      const overlay = document.getElementById('overlay');
+
+      console.log(openModalButtons);
+
+      openModalButtons.forEach(button => {
+          button.addEventListener('click', () => {
+              const modal = document.querySelector(button.dataset.modalTarget);
+              openModal(modal);
+          });
+      });
+
+      closeModalButtons.forEach(button => {
+          button.addEventListener('click', () => {
+              const modal = button.closest('.modal');
+              closeModal(modal);
+          });
+      });
+
+      overlay.addEventListener('click', () => {
+          const modals = document.querySelectorAll('.modal.active');
+          modals.forEach(modal => {
+              closeModal(modal);
+          });
+      });
+
+      function openModal(modal) {
+          if (modal == null) return;
+          modal.classList.add('active');
+          overlay.classList.add('active');
+      }
+
+      function closeModal(modal) {
+          if (modal == null) return;
+          modal.classList.remove('active');
+          overlay.classList.remove('active');
+      }
+
+
+              overlay.addEventListener('click', () => {
+                const modals = document.querySelectorAll('.modal.active')
+                modals.forEach(modal => {
+                    closeModal(modal)
+        })
+      })
+
+      closeModalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const modal = button.closest('.modal')
+          closeModal(modal)
+        })
+      })
+
+      function openModal(modal) {
+        if (modal == null) return
+        modal.classList.add('active')
+        overlay.classList.add('active')
+      }
+
+      function closeModal(modal) {
+        if (modal == null) return
+        modal.classList.remove('active')
+        overlay.classList.remove('active')
+      }
+    });
+  </script>
            <!--ALL-->
            <div class="box-b">
              <h2>List of Total Apprehension with Contact and No Contact</h2>
@@ -570,7 +771,7 @@ $resultInt = $conn->query($sqlInt);
           <!-- Settings Tab Content -->
           <div id="credModal" class="modal3">
             <div class="modalContent3">
-              <form action="action2.php" method="post">
+              <form action="action3.php" method="post">
                 <h2 style="color:#fff;">Change Credentials</h2>
                 <label for="username">Username: </label>
                 <input type="text" name="username" id="User" value="officer" readonly><br>
@@ -943,10 +1144,11 @@ $(document).ready(function() {
      </div>
      </main>
      </div>
+     <script src="script.js"></script>
        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-       <script src="script.js"></script>
+       
 
 
        <script>
@@ -1110,6 +1312,17 @@ menuItems.forEach((item, index) => {
     });
   });
 });
+
+
+  </script>
+  <script>
+    function confirmLogout() {
+  
+  const confirmation = confirm("Are you sure you want to log out?");
+  if (confirmation) {
+    window.location.href = "logout.php";
+  }
+}
   </script>
 </body>
 </html>
